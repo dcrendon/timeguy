@@ -59,6 +59,13 @@ deno task start --username johndoe --password secretpass --flex
 
 - Currently, the script supports only a single charge code. Enhancements for multiple charge code support are planned.
 
+## Compile to Executable
+To compile this script into a standalone executable, use the following command:
+```bash
+deno compile -A main.ts
+```
+It is also possible to hardcode your credentials in the `main.ts` file before compiling to streamline the script and avoid prompts and CLI arguments.
+
 ## Disclaimer
 
 This script is provided as-is. Use it responsibly and ensure compliance with your organization's policies.
