@@ -31,24 +31,29 @@ COSTPOINT_URL=https://your-costpoint-url
 DATABASE=your_database
 COSTPOINT_USERNAME=your_username
 COSTPOINT_PASSWORD=your_password
-CODE_DESCRIPTION=Your Charge Code Description
+
+# Single charge code
+CHARGE_CODES=[{"description":"Your Charge Code Description"}]
+
+# Multiple charge codes with per-code hours (hours/fridayHours are optional, fall back to HOURS/FRIDAY_HOURS)
+CHARGE_CODES=[{"description":"Project Alpha","hours":"6"},{"description":"Project Beta","hours":"3","fridayHours":"2"}]
 ```
 
 All CLI arguments are also supported as environment variables:
 
-| Environment Variable | Equivalent CLI Argument |
-|----------------------|------------------------|
-| `COSTPOINT_URL`      | `--costpointUrl`       |
-| `DATABASE`           | `--database`           |
-| `COSTPOINT_USERNAME` | `--username`           |
-| `COSTPOINT_PASSWORD` | `--password`           |
-| `CODE_DESCRIPTION`   | `--codeDescription`    |
-| `WEEK`               | `--week`               |
-| `FLEX`               | `--flex`               |
-| `FILL_WEEK`          | `--fillWeek`           |
-| `SIGN_TIMESHEET`     | `--signTimesheet`      |
-| `HOURS`              | `--hours`              |
-| `FRIDAY_HOURS`       | `--fridayHours`        |
+| Environment Variable | Equivalent CLI Argument | Notes |
+|----------------------|------------------------|-------|
+| `COSTPOINT_URL`      | `--costpointUrl`       | |
+| `DATABASE`           | `--database`           | |
+| `COSTPOINT_USERNAME` | `--username`           | |
+| `COSTPOINT_PASSWORD` | `--password`           | |
+| `CHARGE_CODES`       | `--chargeCodes`        | JSON array; see Configuration section for format |
+| `WEEK`               | `--week`               | |
+| `FLEX`               | `--flex`               | |
+| `FILL_WEEK`          | `--fillWeek`           | |
+| `SIGN_TIMESHEET`     | `--signTimesheet`      | |
+| `HOURS`              | `--hours`              | Global default; overridden per-code in `CHARGE_CODES` |
+| `FRIDAY_HOURS`       | `--fridayHours`        | Global default; overridden per-code in `CHARGE_CODES` |
 
 > **Note:** The `.env` file is gitignored and will not be committed to version control.
 
@@ -63,23 +68,30 @@ deno task start
 
 ### CLI Arguments
 
-| Argument            | Description                             | Type    | Default         |
-|---------------------|-----------------------------------------|---------|-----------------|
-| `--username`        | Costpoint username                      | string  | Prompted        |
-| `--password`        | Costpoint password                      | string  | Prompted        |
-| `--database`        | Costpoint database                      | string  | Prompted        |
-| `--costpointUrl`    | Costpoint URL                           | string  | Prompted        |
-| `--codeDescription` | Description used to find row            | string  | Prompted        |
-| `--week`            | Specific week to fill (MM/DD/YYYY)      | string  | Next Friday     |
-| `--flex`            | Skip flex-Friday (4-day work week)      | boolean | `false`         |
-| `--fillWeek`        | Fill hours for the entire week          | boolean | `false`         |
-| `--signTimesheet`   | Automatically sign timesheet            | boolean | `false`         |
-| `--hours`           | Hours per day for Mon–Thu               | string  | `9`             |
-| `--fridayHours`     | Hours for Friday                        | string  | `8`             |
+| Argument            | Description                                           | Type    | Default         |
+|---------------------|-------------------------------------------------------|---------|-----------------|
+| `--username`        | Costpoint username                                    | string  | Prompted        |
+| `--password`        | Costpoint password                                    | string  | Prompted        |
+| `--database`        | Costpoint database                                    | string  | Prompted        |
+| `--costpointUrl`    | Costpoint URL                                         | string  | Prompted        |
+| `--chargeCodes`     | JSON array of charge codes (see examples below)       | string  | Prompted        |
+| `--week`            | Specific week to fill (MM/DD/YYYY)                    | string  | Next Friday     |
+| `--flex`            | Skip flex-Friday (4-day work week)                    | boolean | `false`         |
+| `--fillWeek`        | Fill hours for the entire week                        | boolean | `false`         |
+| `--signTimesheet`   | Automatically sign timesheet                          | boolean | `false`         |
+| `--hours`           | Global default hours per day for Mon–Thu              | string  | `9`             |
+| `--fridayHours`     | Global default hours for Friday                       | string  | `8`             |
 
 #### With Arguments
 
 ```bash
+# Single charge code
+deno task start --username johndoe --chargeCodes '[{"description":"Project Alpha"}]'
+
+# Multiple charge codes with per-code hours
+deno task start --fillWeek --chargeCodes '[{"description":"Project Alpha","hours":"6"},{"description":"Project Beta","hours":"3","fridayHours":"2"}]'
+
+# Flex Friday (4-day week)
 deno task start --username johndoe --flex
 ```
 
@@ -89,10 +101,6 @@ deno task start --username johndoe --flex
 - Credentials are not stored persistently by the script.
 - Avoid passing `--password` as a CLI argument — it will be visible in your shell history. Use the interactive prompt or a `.env` file instead.
 - Never hardcode credentials directly in source files, especially before compiling to a binary.
-
-## Limitations
-
-- Currently, the script supports only a single charge code. Enhancements for multiple charge code support are planned.
 
 ## Compile to Executable
 
